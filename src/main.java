@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * PACKAGE_NAME
  * Created by Duy
@@ -6,6 +9,12 @@
  */
 public class main {
     public static void main(String[] args){
-        System.out.println("Hé llo");
+        HashMap<String,ArrayList<String>> map=new HashMap<String, ArrayList<String>>();//Creating HashMap
+//        map.put("hello",new ArrayList<>());
+//        ArrayList<String> meaning = map.get("hello");
+//        meaning.add("xin chào");
+//        meaning.add("hé llo");
+
+        System.out.println(map.get("hello"));
     }
 }
