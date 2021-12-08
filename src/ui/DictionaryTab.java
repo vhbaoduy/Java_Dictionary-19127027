@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Vector;
 
 /**
  * ui
@@ -20,7 +21,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
     private MainFrame mainFrame;
 
 
-    private final String[] columns = {"Word", "Definition"};
+    private final String[] columns = {"Index","Word", "Definition"};
     private String[][] data = {{"",""}};
     // Title of pane, top pane
     private JLabel title;
@@ -131,8 +132,11 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.addMouseListener(this);
-        table.getColumnModel().getColumn(0).setMaxWidth(300);
-        table.getColumnModel().getColumn(0).setMinWidth(200);
+
+        table.getColumnModel().getColumn(0).setMaxWidth(100);
+        table.getColumnModel().getColumn(0).setMinWidth(50);
+        table.getColumnModel().getColumn(1).setMaxWidth(300);
+        table.getColumnModel().getColumn(1).setMinWidth(200);
         table.getTableHeader().setFont(new Font("Arial",Font.BOLD, 13));
         table.setRowHeight(20);
 
@@ -227,11 +231,11 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         }
         if (e.getClickCount() == 2){
             DefaultTableModel model = (DefaultTableModel)table.getModel();
-            StringBuilder message = new StringBuilder();
-            for(Object i : model.getDataVector().elementAt(row)){
-                message.append(i).append("\n");
-            }
-            JOptionPane.showMessageDialog(this,message);
+            Vector<Vector> vector = model.getDataVector();
+            String word = (String) vector.elementAt(row).elementAt(1);
+            String definition = (String) vector.elementAt(row).elementAt(2);
+            String message = String.format("Word: %s \nDefinition: %s ",word,definition);
+            JOptionPane.showMessageDialog(this,message,"Information",JOptionPane.INFORMATION_MESSAGE);
         }
 
         rowField.setText(String.valueOf(row));

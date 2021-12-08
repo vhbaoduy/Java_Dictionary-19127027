@@ -171,6 +171,7 @@ public class MyDictionary {
     }
 
 
+
     /**
      *
      */
@@ -181,32 +182,26 @@ public class MyDictionary {
     }
 
     public String[][] convertToDataOfTable() {
-        String[][] data = new String[dictionary.size() + dupplicateWord.size()][2];
-        Iterator<Map.Entry<String, ArrayList<String>>> entriesIterator1 = dictionary.entrySet().iterator();
-        Iterator<Map.Entry<String, ArrayList<String>>> entriesIterator2 = dupplicateWord.entrySet().iterator();
+        String[][] data = new String[dictionary.size() + dupplicateWord.size()][3];
+
+        String[] keys = dictionary.keySet().toArray(new String[0]);
+        String[] key2s = dupplicateWord.keySet().toArray(new String[0]);
         int i = 0;
-        while (entriesIterator1.hasNext()) {
-            try {
-                Map.Entry mapping = entriesIterator1.next();
 
-                data[i][0] = (String) mapping.getKey();
-                data[i][1] = (String) mapping.getValue();
-                i++;
-                System.out.println(mapping.getKey());
-            } catch (Exception e) {
-
-            }
+        for (String key : keys) {
+            data[i][0] = String.valueOf(i);
+            data[i][1] = key;
+            data[i][2] = String.valueOf(dictionary.get(key)).replace("[","").replace("]","");;
+            i++;
         }
-        while (entriesIterator2.hasNext()) {
-            try {
-                Map.Entry mapping = entriesIterator2.next();
-                data[i][0] = (String) mapping.getKey();
-                data[i][1] = (String) mapping.getValue();
-                i++;
-            } catch (Exception e) {
 
-            }
+        for (String key2 : key2s) {
+            data[i][0] = String.valueOf(i);
+            data[i][1] = key2;
+            data[i][2] = String.valueOf(dictionary.get(key2)).replace("[","").replace("]","");
+            i++;
         }
+
 
         return data;
     }
