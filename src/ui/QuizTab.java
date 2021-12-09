@@ -6,5 +6,5 @@ package ui;
  * Date 12/6/2021 - 10:15 PM
  * Description: ...
  */
-public class QuizzTab {
+public class QuizTab {
 }

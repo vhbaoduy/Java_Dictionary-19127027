@@ -7,4 +7,10 @@ package dataprocessing;
  * Description: ...
  */
 public class DataProcessing {
+    private MyDictionary dictionary;
+
+    public DataProcessing(){
+        dictionary = new MyDictionary();
+    }
+
 }

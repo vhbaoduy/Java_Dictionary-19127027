@@ -98,6 +98,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         searchInput.setPreferredSize(new Dimension(250,20));
         topPane.add(searchInput);
         searchButton = new JButton("Search");
+//        searchButton.setIcon();
         topPane.add(searchButton);
 
         historyButton = new JButton("History");
@@ -179,7 +180,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         resetButton = new JButton("Reset Dictionary");
         resetButton.addActionListener(this);
 
-        addButton = new JButton("Add word");
+        addButton = new JButton("Add a new word");
         addButton.addActionListener(this);
 
         deleteButton = new JButton("Delete word");
@@ -218,6 +219,22 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == addButton){
+            SlangForm slangForm = new SlangForm("add",null);
+        }
+
+        if (e.getSource() == editButton){
+            int row =table.getSelectedRow();
+            if (row != -1) {
+                DefaultTableModel model = getModel(data,columns);
+                SlangForm slangForm = new SlangForm("edit", model.getDataVector().elementAt(row));
+                slangForm.setDisplay(true);
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "You need to choose row to edit!!!");
+            }
+        }
+
 
     }
 
