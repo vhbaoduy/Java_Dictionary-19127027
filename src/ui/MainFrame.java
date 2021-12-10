@@ -70,6 +70,13 @@ public class MainFrame extends JFrame {
 
     }
 
+
+    public MyDictionary getMyDictionary(){
+        return myDictionary;
+    }
+
+
+
     public String[][] getData(){
         return myDictionary.convertToDataOfTable();
     }

@@ -63,8 +63,10 @@ public class MyDictionary {
         try {
             String[] lineList = line.split("`");
             word = lineList[0];
-            String[] meaning = lineList[1].split("\\|");
-            return new ArrayList<String>(List.of(meaning));
+            String meaning = lineList[1].replace("|",",");
+            ArrayList<String> arrayList = new ArrayList<>();
+            arrayList.add(meaning);
+            return arrayList;
 
         } catch (Exception e) {
             System.out.println(word);
@@ -123,13 +125,10 @@ public class MyDictionary {
                 dictionary.put(word, meaningList);
             } else {
                 if (flag) {
-//                    meaningList.add(meaning);
                     meaningList.clear();
                     meaningList.add(meaning);
                 } else {
-                    ArrayList<String> temp = new ArrayList<String>();
-                    temp.add(meaning);
-                    dupplicateWord.put(word, temp);
+                    meaningList.add(meaning);
                 }
             }
         } catch (Exception e) {
@@ -182,31 +181,43 @@ public class MyDictionary {
     }
 
     public String[][] convertToDataOfTable() {
-        String[][] data = new String[dictionary.size() + dupplicateWord.size()][3];
+//        String[][] data = new String[dictionary.size() + dupplicateWord.size()][3];
+        ArrayList<String[]> data = new ArrayList<>();
 
         String[] keys = dictionary.keySet().toArray(new String[0]);
-        String[] key2s = dupplicateWord.keySet().toArray(new String[0]);
+//        String[] key2s = dupplicateWord.keySet().toArray(new String[0]);
         int i = 0;
 
         for (String key : keys) {
-            data[i][0] = String.valueOf(i);
-            data[i][1] = key;
-            data[i][2] = String.valueOf(dictionary.get(key)).replace("[","").replace("]","");;
-            i++;
+            ArrayList<String> meaning = dictionary.get(key);
+//            data[i][0] = String.valueOf(i);
+//            data[i][1] = key;
+//            data[i][2] = String.valueOf(dictionary.get(key)).replace("[","").replace("]","");;
+
+            if (meaning != null) {
+                for (String value : meaning) {
+                    String[] row = new String[3];
+                    row[0] = String.valueOf(i);
+                    row[1] = key;
+                    row[2] = value;
+                    i++;
+                    data.add(row);
+                }
+
+            }else{
+                String[] row = new String[3];
+                row[0] = String.valueOf(i);
+                row[1] = key;
+                row[2] = "";
+                i++;
+                data.add(row);
+            }
         }
-
-        for (String key2 : key2s) {
-            data[i][0] = String.valueOf(i);
-            data[i][1] = key2;
-            data[i][2] = String.valueOf(dictionary.get(key2)).replace("[","").replace("]","");
-            i++;
-        }
-
-
-        return data;
+        return data.toArray(new String[0][]);
     }
 
     public static void main(String[] args) {
         MyDictionary myDictionary = new MyDictionary();
+//        myDictionary.addANewWord("BBC","Cute",false);
     }
 }

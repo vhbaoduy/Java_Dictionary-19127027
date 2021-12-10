@@ -215,19 +215,28 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
             }
         };
     }
-
+    public void refresh(){
+        data = mainFrame.getData();
+        DefaultTableModel tableModel = getModel(data,columns);
+        table.setModel(tableModel);
+        rowField.setText("None");
+        table.getColumnModel().getColumn(0).setMaxWidth(100);
+        table.getColumnModel().getColumn(0).setMinWidth(50);
+        table.getColumnModel().getColumn(1).setMaxWidth(300);
+        table.getColumnModel().getColumn(1).setMinWidth(200);
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addButton){
-            SlangForm slangForm = new SlangForm("add",null);
+            SlangForm slangForm = new SlangForm(this,mainFrame.getMyDictionary(),"add",null);
         }
 
         if (e.getSource() == editButton){
             int row =table.getSelectedRow();
             if (row != -1) {
                 DefaultTableModel model = getModel(data,columns);
-                SlangForm slangForm = new SlangForm("edit", model.getDataVector().elementAt(row));
+                SlangForm slangForm = new SlangForm(this,mainFrame.getMyDictionary(),"edit", model.getDataVector().elementAt(row));
                 slangForm.setDisplay(true);
             }
             else{

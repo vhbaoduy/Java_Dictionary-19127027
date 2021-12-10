@@ -1,9 +1,12 @@
 package ui;
 
+import dataprocessing.MyDictionary;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -25,8 +28,12 @@ public class SlangForm extends JFrame implements ActionListener {
     private JTextField wordInput;
     private JTextField definitionInput;
     private JButton submitButton;
+    private MyDictionary dictionary;
+    private DictionaryTab dictionaryTab;
 
-    public SlangForm(String goal, Vector row){
+    public SlangForm(DictionaryTab dictionaryTab,MyDictionary dictionary, String goal, Vector row){
+        this.dictionaryTab = dictionaryTab;
+        this.dictionary = dictionary;
         this.goal = goal;
         rowData = row;
         initialForm();
@@ -106,6 +113,7 @@ public class SlangForm extends JFrame implements ActionListener {
 
         submitButton = new JButton("");
         submitButton.setAlignmentX(CENTER_ALIGNMENT);
+        submitButton.addActionListener(this);
 
         container.add(wordPane);
         container.add(Box.createRigidArea(new Dimension(0,20)));
@@ -132,6 +140,40 @@ public class SlangForm extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == submitButton){
+            String word = wordInput.getText();
+            String definition = definitionInput.getText();
+            if (goal.compareToIgnoreCase("add") == 0){
+                if(word.equals("") || definition.equals("")){
+                    JOptionPane.showMessageDialog(this,"Word and Definition need to be filled!!!");
+                }else{
+                    ArrayList<String> list = dictionary.findMeaning(word);
+                    System.out.println(list);
+                    if(list == null){
+                        dictionary.addANewWord(word,definition,false);
+                    }else{
+                        int choice = JOptionPane.showConfirmDialog(this,"Word is exist in Dictionary!" +
+                                "\nDo you want to overwrite it?",
+                                "Confirm",
+                                JOptionPane.YES_NO_OPTION);
+                        if (choice == 0) {
+                            dictionary.addANewWord(word, definition, true);
+                        }else{
+                            dictionary.addANewWord(word, definition, false);
+                        }
+                    }
+                    try {
+                        JOptionPane.showMessageDialog(this,"Add a new word successfully!");
+                        dictionaryTab.refresh();
+                        setDisplay(false);
+                    }catch (Exception ex){
+                        JOptionPane.showMessageDialog(this,"Add a new word failed!!!");
+                    }
+                }
+            }
+
+        }
 
     }
 
