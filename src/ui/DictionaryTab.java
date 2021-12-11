@@ -1,5 +1,7 @@
 package ui;
 
+import dataprocessing.MyDictionary;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -21,8 +23,8 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
     private MainFrame mainFrame;
 
 
-    private final String[] columns = {"Index","Word", "Definition"};
-    private String[][] data = {{"",""}};
+    private final String[] columns = {"Index", "Word", "Definition"};
+    private String[][] data = {{"", ""}};
     // Title of pane, top pane
     private JLabel title;
     private JLabel searchText;
@@ -64,7 +66,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         add(title);
         JPanel topPane = createTopPane();
         add(topPane);
-        add(Box.createRigidArea(new Dimension(0,10)));
+        add(Box.createRigidArea(new Dimension(0, 10)));
         JPanel middlePane = createMiddlePane();
         JPanel bottomPane = createBottomPane();
         add(middlePane);
@@ -88,14 +90,14 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         buttonGroup.add(definitionButton);
         topPane.add(wordButton);
         topPane.add(definitionButton);
-        topPane.add(Box.createRigidArea(new Dimension(20,0)));
+        topPane.add(Box.createRigidArea(new Dimension(20, 0)));
 
 
         searchInput = new JTextField();
         searchInput.setFont(new Font("Arial", Font.ITALIC, 15));
-        searchInput.setMinimumSize(new Dimension(100,20));
-        searchInput.setMaximumSize(new Dimension(300,20));
-        searchInput.setPreferredSize(new Dimension(250,20));
+        searchInput.setMinimumSize(new Dimension(100, 20));
+        searchInput.setMaximumSize(new Dimension(300, 20));
+        searchInput.setPreferredSize(new Dimension(250, 20));
         topPane.add(searchInput);
         searchButton = new JButton("Search");
 //        searchButton.setIcon();
@@ -114,8 +116,8 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         JPanel tablePane = new JPanel();
         tablePane.setLayout(new BoxLayout(tablePane, BoxLayout.Y_AXIS));
         tablePane.setMaximumSize(new Dimension(900, 300));
-        tablePane.setMaximumSize(new Dimension(900,350));
-        tablePane.setPreferredSize(new Dimension(900,350));
+        tablePane.setMaximumSize(new Dimension(900, 350));
+        tablePane.setPreferredSize(new Dimension(900, 350));
         tablePane.setBorder(BorderFactory.createTitledBorder("Dictionary"));
         tablePane.setLocation(0, 0);
 
@@ -138,7 +140,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         table.getColumnModel().getColumn(0).setMinWidth(50);
         table.getColumnModel().getColumn(1).setMaxWidth(300);
         table.getColumnModel().getColumn(1).setMinWidth(200);
-        table.getTableHeader().setFont(new Font("Arial",Font.BOLD, 13));
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
         table.setRowHeight(20);
 
 //
@@ -152,16 +154,16 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
 
 
         JPanel selectPane = new JPanel();
-        selectPane.setLayout(new BoxLayout(selectPane,BoxLayout.X_AXIS));
+        selectPane.setLayout(new BoxLayout(selectPane, BoxLayout.X_AXIS));
 
         selectedRow = new JLabel("Selected Row: ");
         rowField = new JTextField();
         rowField.setEditable(false);
         rowField.setText("None");
-        rowField.setMaximumSize(new Dimension(50,20));
-        rowField.setFont(new Font("Arial", Font.BOLD,15));
+        rowField.setMaximumSize(new Dimension(50, 20));
+        rowField.setFont(new Font("Arial", Font.BOLD, 15));
 
-        selectPane.add(Box.createRigidArea(new Dimension(700,0)));
+        selectPane.add(Box.createRigidArea(new Dimension(700, 0)));
         selectPane.add(selectedRow);
         selectPane.add(rowField);
 
@@ -174,7 +176,6 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         JPanel bottomPane = new JPanel();
         bottomPane.setMaximumSize(new Dimension(900, 60));
         bottomPane.setBorder(BorderFactory.createTitledBorder("Menu"));
-
 
 
         resetButton = new JButton("Reset Dictionary");
@@ -202,11 +203,12 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
 
     /**
      * Get model not edit, only select
-     * @param data_ String[][] Data of table
+     *
+     * @param data_    String[][] Data of table
      * @param columns_ String [] Columns name
      * @return model
      */
-    public static DefaultTableModel getModel(String[][] data_, String[] columns_){
+    public static DefaultTableModel getModel(String[][] data_, String[] columns_) {
         return new DefaultTableModel(data_, columns_) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -215,9 +217,10 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
             }
         };
     }
-    public void refresh(){
+
+    public void refresh() {
         data = mainFrame.getData();
-        DefaultTableModel tableModel = getModel(data,columns);
+        DefaultTableModel tableModel = getModel(data, columns);
         table.setModel(tableModel);
         rowField.setText("None");
         table.getColumnModel().getColumn(0).setMaxWidth(100);
@@ -228,19 +231,52 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == addButton){
-            SlangForm slangForm = new SlangForm(this,mainFrame.getMyDictionary(),"add",null);
+        if (e.getSource() == addButton) {
+            SlangForm slangForm = new SlangForm(this, mainFrame.getMyDictionary(), "add", null);
         }
 
-        if (e.getSource() == editButton){
-            int row =table.getSelectedRow();
+        if (e.getSource() == editButton) {
+            int row = table.getSelectedRow();
             if (row != -1) {
-                DefaultTableModel model = getModel(data,columns);
-                SlangForm slangForm = new SlangForm(this,mainFrame.getMyDictionary(),"edit", model.getDataVector().elementAt(row));
+                DefaultTableModel model = getModel(data, columns);
+                SlangForm slangForm = new SlangForm(this, mainFrame.getMyDictionary(), "edit", model.getDataVector().elementAt(row));
                 slangForm.setDisplay(true);
-            }
-            else{
+            } else {
                 JOptionPane.showMessageDialog(this, "You need to choose row to edit!!!");
+            }
+        }
+
+        if (e.getSource() == deleteButton) {
+            int row = table.getSelectedRow();
+            if (row != -1) {
+                DefaultTableModel model = getModel(data, columns);
+                Vector rows = model.getDataVector().elementAt(row);
+                String word = (String) rows.elementAt(1);
+                String definition = (String) rows.elementAt(2);
+                MyDictionary dictionary = mainFrame.getMyDictionary();
+                int choice =  JOptionPane.showConfirmDialog(this, "Do you want to delete this word?",
+                        "Notification",
+                        JOptionPane.YES_NO_OPTION);
+                if (choice == 0){
+                    dictionary.deleteWord(word, definition);
+                    JOptionPane.showMessageDialog(this, "Delete word successfully!");
+                    refresh();
+                }else{
+
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(this, "You need to choose row to edit!!!");
+            }
+        }
+
+        if (e.getSource() == resetButton) {
+            int choice = JOptionPane.showConfirmDialog(this, "Do you want to reset dictionary?",
+                    "Notification",
+                    JOptionPane.YES_NO_OPTION);
+            if (choice == 0) {
+                mainFrame.getMyDictionary().resetDictionary();
+                refresh();
             }
         }
 
@@ -249,19 +285,19 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int row =table.getSelectedRow();
-        if (e.getClickCount() == 1){
+        int row = table.getSelectedRow();
+        if (e.getClickCount() == 1) {
             System.out.println(table.getSelectedRow());
-            DefaultTableModel model = (DefaultTableModel)table.getModel();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
             System.out.println(model.getDataVector().elementAt(table.getSelectedRow()));
         }
-        if (e.getClickCount() == 2){
-            DefaultTableModel model = (DefaultTableModel)table.getModel();
+        if (e.getClickCount() == 2) {
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
             Vector<Vector> vector = model.getDataVector();
             String word = (String) vector.elementAt(row).elementAt(1);
             String definition = (String) vector.elementAt(row).elementAt(2);
-            String message = String.format("Word: %s \nDefinition: %s ",word,definition);
-            JOptionPane.showMessageDialog(this,message,"Information",JOptionPane.INFORMATION_MESSAGE);
+            String message = String.format("Word: %s \nDefinition: %s ", word, definition);
+            JOptionPane.showMessageDialog(this, message, "Information", JOptionPane.INFORMATION_MESSAGE);
         }
 
         rowField.setText(String.valueOf(row));

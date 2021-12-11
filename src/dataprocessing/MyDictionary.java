@@ -63,7 +63,12 @@ public class MyDictionary {
         try {
             String[] lineList = line.split("`");
             word = lineList[0];
-            String meaning = lineList[1].replace("|",",");
+            String meaning;
+            if (lineList.length == 2) {
+                meaning = lineList[1].replace("|", ",");
+            }else{
+                meaning = "";
+            }
             ArrayList<String> arrayList = new ArrayList<>();
             arrayList.add(meaning);
             return arrayList;
@@ -146,7 +151,6 @@ public class MyDictionary {
     public void editWord(String word, String meaning) {
         try {
             ArrayList<String> meaningList = findMeaning(word);
-
             meaningList.clear();
             meaningList.add(meaning);
 
@@ -160,9 +164,15 @@ public class MyDictionary {
      *
      * @param word String of word
      */
-    public void deleteWord(String word) {
+    public void deleteWord(String word,String definition) {
         try {
-            dictionary.remove(word);
+            ArrayList<String> meaning = findMeaning(word);
+            if (meaning.size() == 1){
+                dictionary.remove(word);
+            }else{
+                meaning.remove(definition);
+            }
+
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -172,11 +182,10 @@ public class MyDictionary {
 
 
     /**
-     *
+     * Reset Dictionary
      */
     public void resetDictionary() {
         dictionary = new HashMap<String, ArrayList<String>>();
-        dupplicateWord = new HashMap<String, ArrayList<String>>();
         readDataFromFile(pathToDictionary);
     }
 
@@ -218,6 +227,6 @@ public class MyDictionary {
 
     public static void main(String[] args) {
         MyDictionary myDictionary = new MyDictionary();
-//        myDictionary.addANewWord("BBC","Cute",false);
+
     }
 }
