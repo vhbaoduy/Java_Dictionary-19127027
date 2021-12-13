@@ -190,13 +190,15 @@ public class MyDictionary {
     }
 
     public String[][] convertToDataOfTable() {
-//        String[][] data = new String[dictionary.size() + dupplicateWord.size()][3];
-        ArrayList<String[]> data = new ArrayList<>();
-
         String[] keys = dictionary.keySet().toArray(new String[0]);
 //        String[] key2s = dupplicateWord.keySet().toArray(new String[0]);
-        int i = 0;
+        return getMeaningByWords(keys);
+    }
 
+    public String[][] getMeaningByWords(String[] keys){
+
+        ArrayList<String[]> data = new ArrayList<>();
+        int i = 0;
         for (String key : keys) {
             ArrayList<String> meaning = dictionary.get(key);
 //            data[i][0] = String.valueOf(i);
@@ -225,8 +227,55 @@ public class MyDictionary {
         return data.toArray(new String[0][]);
     }
 
+    /**
+     * Search by key == word
+     * @param word String of word
+     * @return String[][]
+     */
+    public String[][] searchByWord(String word){
+        String[] keys = dictionary.keySet().toArray(new String[0]);
+        ArrayList<String> resultKeys = new ArrayList<>();
+        String wordLowercase = word.toLowerCase(Locale.ROOT);
+        for (String key: keys){
+            String temp = key.toLowerCase(Locale.ROOT);
+            if (wordLowercase.compareToIgnoreCase(temp) == 0 || temp.contains(wordLowercase)){
+                resultKeys.add(key);
+            }
+        }
+        return getMeaningByWords(resultKeys.toArray(new String[0]));
+    }
+
+    /**
+     *  Search by definition
+     * @param definition String of definition
+     * @return String[][]
+     */
+    public String[][] searchByMeaning(String definition){
+        String[] keys = dictionary.keySet().toArray(new String[0]);
+        ArrayList<String> resultKeys = new ArrayList<>();
+        String definitionLowercase = definition.toLowerCase(Locale.ROOT);
+        for (String key: keys){
+            ArrayList<String> meanings = dictionary.get(key);
+            if (meanings != null){
+                for (String value: meanings){
+                    String temp = value.toLowerCase(Locale.ROOT);
+                    if(temp.contains(definitionLowercase)){
+                        resultKeys.add(key);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return getMeaningByWords(resultKeys.toArray(new String[0]));
+    }
+
+
+
     public static void main(String[] args) {
         MyDictionary myDictionary = new MyDictionary();
+        myDictionary.deleteWord("CBBC","Children's BBC");
+        System.out.println(myDictionary.findMeaning("CBBC"));
 
     }
 }

@@ -33,6 +33,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
     private JTextField searchInput;
     private JButton searchButton;
     private JButton historyButton;
+    private JButton refreshButton;
 
     // Middle - pane
     private JTable table;
@@ -84,6 +85,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         topPane.add(searchText);
 
         wordButton = new JRadioButton("Word");
+        wordButton.setSelected(true);
         definitionButton = new JRadioButton("Definition");
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(wordButton);
@@ -100,10 +102,12 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         searchInput.setPreferredSize(new Dimension(250, 20));
         topPane.add(searchInput);
         searchButton = new JButton("Search");
+        searchButton.addActionListener(this);
 //        searchButton.setIcon();
         topPane.add(searchButton);
 
         historyButton = new JButton("History");
+        historyButton.addActionListener(this);
         topPane.add(historyButton);
 
 //        topPane.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -177,6 +181,8 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         bottomPane.setMaximumSize(new Dimension(900, 60));
         bottomPane.setBorder(BorderFactory.createTitledBorder("Menu"));
 
+        refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(this);
 
         resetButton = new JButton("Reset Dictionary");
         resetButton.addActionListener(this);
@@ -192,6 +198,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
 
 //        bottomPane.add(selectedRow);
 
+        bottomPane.add(refreshButton);
         bottomPane.add(resetButton);
         bottomPane.add(addButton);
         bottomPane.add(editButton);
@@ -218,15 +225,20 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         };
     }
 
-    public void refresh() {
-        data = mainFrame.getData();
-        DefaultTableModel tableModel = getModel(data, columns);
+    public void setDataOfTable(String [][] data_, String[] columns_){
+        DefaultTableModel tableModel = getModel(data_, columns_);
         table.setModel(tableModel);
-        rowField.setText("None");
         table.getColumnModel().getColumn(0).setMaxWidth(100);
         table.getColumnModel().getColumn(0).setMinWidth(50);
         table.getColumnModel().getColumn(1).setMaxWidth(300);
         table.getColumnModel().getColumn(1).setMinWidth(200);
+    }
+
+    public void refresh() {
+        data = mainFrame.getData();
+        setDataOfTable(data,columns);
+        rowField.setText("None");
+        searchInput.setText("");
     }
 
     @Override
@@ -254,14 +266,14 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
                 String word = (String) rows.elementAt(1);
                 String definition = (String) rows.elementAt(2);
                 MyDictionary dictionary = mainFrame.getMyDictionary();
-                int choice =  JOptionPane.showConfirmDialog(this, "Do you want to delete this word?",
+                int choice = JOptionPane.showConfirmDialog(this, "Do you want to delete this word?",
                         "Notification",
                         JOptionPane.YES_NO_OPTION);
-                if (choice == 0){
+                if (choice == 0) {
                     dictionary.deleteWord(word, definition);
                     JOptionPane.showMessageDialog(this, "Delete word successfully!");
                     refresh();
-                }else{
+                } else {
 
                 }
 
@@ -278,6 +290,28 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
                 mainFrame.getMyDictionary().resetDictionary();
                 refresh();
             }
+        }
+
+        if (e.getSource() == searchButton) {
+            String text = searchInput.getText();
+            if (text.equals("")) {
+                JOptionPane.showMessageDialog(this,"This field can not be left blank!!!");
+            } else {
+                MyDictionary dictionary = mainFrame.getMyDictionary();
+                if (wordButton.isSelected()) {
+                    String[][] data_ = dictionary.searchByWord(text);
+                    setDataOfTable(data_,columns);
+
+                }
+                if (definitionButton.isSelected()){
+                    String[][] data_ = dictionary.searchByMeaning(text);
+                    setDataOfTable(data_,columns);
+                }
+            }
+        }
+
+        if (e.getSource() == refreshButton){
+            refresh();
         }
 
 
