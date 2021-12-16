@@ -15,7 +15,7 @@ public class MainFrame extends JFrame {
     final private int WIDTH = 900;
     final  private int HEIGHT = 600;
     private Container container;
-    private MyDictionary myDictionary;
+    public static MyDictionary dictionary;
 
     private JTabbedPane tabbedPane;
     private DictionaryTab dictionaryTab;
@@ -26,7 +26,7 @@ public class MainFrame extends JFrame {
      * Default constructor
      */
     public MainFrame(){
-        myDictionary = new MyDictionary();
+        dictionary = new MyDictionary();
         initialMainFrame();
         addTabbedPane();
     }
@@ -71,14 +71,10 @@ public class MainFrame extends JFrame {
     }
 
 
-    public MyDictionary getMyDictionary(){
-        return myDictionary;
-    }
-
 
 
     public String[][] getData(){
-        return myDictionary.convertToDataOfTable();
+        return dictionary.convertToDataOfTable();
     }
 
     public static void main(String[] args){

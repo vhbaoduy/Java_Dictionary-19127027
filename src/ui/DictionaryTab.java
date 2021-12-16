@@ -243,15 +243,16 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        MyDictionary dictionary = mainFrame.dictionary;
         if (e.getSource() == addButton) {
-            SlangForm slangForm = new SlangForm(this, mainFrame.getMyDictionary(), "add", null);
+            SlangForm slangForm = new SlangForm(this, dictionary, "add", null);
         }
 
         if (e.getSource() == editButton) {
             int row = table.getSelectedRow();
             if (row != -1) {
-                DefaultTableModel model = getModel(data, columns);
-                SlangForm slangForm = new SlangForm(this, mainFrame.getMyDictionary(), "edit", model.getDataVector().elementAt(row));
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                SlangForm slangForm = new SlangForm(this, dictionary, "edit", model.getDataVector().elementAt(row));
                 slangForm.setDisplay(true);
             } else {
                 JOptionPane.showMessageDialog(this, "You need to choose row to edit!!!");
@@ -261,11 +262,11 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         if (e.getSource() == deleteButton) {
             int row = table.getSelectedRow();
             if (row != -1) {
-                DefaultTableModel model = getModel(data, columns);
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
                 Vector rows = model.getDataVector().elementAt(row);
                 String word = (String) rows.elementAt(1);
                 String definition = (String) rows.elementAt(2);
-                MyDictionary dictionary = mainFrame.getMyDictionary();
+
                 int choice = JOptionPane.showConfirmDialog(this, "Do you want to delete this word?",
                         "Notification",
                         JOptionPane.YES_NO_OPTION);
@@ -273,8 +274,6 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
                     dictionary.deleteWord(word, definition);
                     JOptionPane.showMessageDialog(this, "Delete word successfully!");
                     refresh();
-                } else {
-
                 }
 
             } else {
@@ -287,7 +286,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
                     "Notification",
                     JOptionPane.YES_NO_OPTION);
             if (choice == 0) {
-                mainFrame.getMyDictionary().resetDictionary();
+                dictionary.resetDictionary();
                 refresh();
             }
         }
@@ -297,7 +296,6 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
             if (text.equals("")) {
                 JOptionPane.showMessageDialog(this,"This field can not be left blank!!!");
             } else {
-                MyDictionary dictionary = mainFrame.getMyDictionary();
                 if (wordButton.isSelected()) {
                     String[][] data_ = dictionary.searchByWord(text);
                     setDataOfTable(data_,columns);
@@ -312,6 +310,9 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
 
         if (e.getSource() == refreshButton){
             refresh();
+        }
+        if (e.getSource() == historyButton){
+            new History(dictionary.getHistorySearch());
         }
 
 

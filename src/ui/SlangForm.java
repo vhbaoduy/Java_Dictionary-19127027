@@ -53,6 +53,7 @@ public class SlangForm extends JFrame implements ActionListener {
         setUndecorated(true);
         getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
         setResizable(false);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         setBounds(600, 300, WIDTH, HEIGHT);
 
@@ -176,7 +177,8 @@ public class SlangForm extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Definition need to be filled!!!");
                 } else {
                     try {
-                        dictionary.editWord(word,definition);
+                        String old = (String)rowData.elementAt(2);
+                        dictionary.editWord(word,old,definition);
                         JOptionPane.showMessageDialog(this, "Edit word successfully!");
                         dictionaryTab.refresh();
                         setDisplay(false);

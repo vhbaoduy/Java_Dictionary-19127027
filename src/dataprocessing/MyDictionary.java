@@ -1,7 +1,8 @@
 package dataprocessing;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -12,37 +13,50 @@ import java.util.*;
  */
 public class MyDictionary {
     private HashMap<String, ArrayList<String>> dictionary;
-    private HashMap<String, ArrayList<String>> dupplicateWord;
-    private String pathToDictionary = "./data/slang.txt";
+    private String dir = "data";
+    private String pathToDataRestore = dir + "/" + "restore/slang.txt";
+    private String pathToData = dir + "/" + "slang.txt";
+    private String pathToHistory = dir + "/" + "history_search.txt";
+    private ArrayList<String> history;
 
     /**
      * Default constructor
      */
     public MyDictionary() {
-        dictionary = new HashMap<String, ArrayList<String>>();
-        dupplicateWord = new HashMap<String, ArrayList<String>>();
-        readDataFromFile(pathToDictionary);
+        history = new ArrayList<>();
+        readDataFromFile(false);
+        loadHistoryFromFile();
     }
 
     /**
-     * Read data from file
-     *
-     * @param path String of path to dictionary
-     * @return True if succeed or false if fail
+     * Return success or not
+     * @param isReset option
+     * @return true/false
      */
-    public boolean readDataFromFile(String path) {
+    public boolean readDataFromFile(boolean isReset) {
         try {
-            FileReader fileReader = new FileReader(path);
+            dictionary = new HashMap<String, ArrayList<String>>();
+            FileReader fileReader= null;
+            if (!isReset) {
+                fileReader = new FileReader(pathToData);
+            }else{
+                fileReader = new FileReader(pathToDataRestore);
+            }
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String line;
-            line = bufferedReader.readLine(); // ignore first line
+//            line = bufferedReader.readLine(); // ignore first line
+            int i = 0;
             while (true) {
                 line = bufferedReader.readLine();
                 if (line == null) {
                     break;
                 }
+//                System.out.println(i++);
                 String word = getWordFromLine(line);
-                ArrayList<String> meaning = getMeaningFromLine(line);
+                ArrayList<String> meaning = getMeaningFromLine(line,isReset);
+                if (dictionary.get(word) != null){
+                    System.out.println(word);
+                }
                 dictionary.put(word, meaning);
             }
             return true;
@@ -58,19 +72,27 @@ public class MyDictionary {
      * @param line String of line in the file
      * @return Array list of Strong for meaning
      */
-    public ArrayList<String> getMeaningFromLine(String line) {
+    public ArrayList<String> getMeaningFromLine(String line,boolean isReset) {
         String word = "";
         try {
             String[] lineList = line.split("`");
             word = lineList[0];
-            String meaning;
-            if (lineList.length == 2) {
-                meaning = lineList[1].replace("|", ",");
-            }else{
-                meaning = "";
-            }
+            String meaning = "";
             ArrayList<String> arrayList = new ArrayList<>();
-            arrayList.add(meaning);
+            if (lineList.length == 2) {
+                if (isReset) {
+                    meaning = lineList[1].replace("|", ",");
+                    arrayList.add(meaning);
+                }else {
+                    String[] list = lineList[1].split("\\|");
+                    for(String str:list){
+                        arrayList.add(str);
+                    }
+                }
+            }else{
+                System.out.println(word);
+                arrayList.add("");
+            }
             return arrayList;
 
         } catch (Exception e) {
@@ -136,6 +158,7 @@ public class MyDictionary {
                     meaningList.add(meaning);
                 }
             }
+            storeCurrentData();
         } catch (Exception e) {
 
         }
@@ -143,16 +166,26 @@ public class MyDictionary {
     }
 
     /**
-     * Edit the meaning of word
-     *
-     * @param word    String of word
-     * @param meaning String of meaning
+     * Edit word
+     * @param word String of word
+     * @param oldMeaning String of old meaning
+     * @param newMeaning String of new meaning
      */
-    public void editWord(String word, String meaning) {
+    public void editWord(String word, String oldMeaning, String newMeaning) {
         try {
             ArrayList<String> meaningList = findMeaning(word);
-            meaningList.clear();
-            meaningList.add(meaning);
+            int size = meaningList.size();
+            if (size == 1) {
+                meaningList.clear();
+                meaningList.add(newMeaning);
+            }else{
+                for (int i = 0; i< size ; ++i){
+                    if (meaningList.get(i).equals(oldMeaning)){
+                        meaningList.set(i,newMeaning);
+                    }
+                }
+            }
+            storeCurrentData();
 
         } catch (Exception e) {
 
@@ -172,7 +205,7 @@ public class MyDictionary {
             }else{
                 meaning.remove(definition);
             }
-
+            storeCurrentData();
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -185,13 +218,12 @@ public class MyDictionary {
      * Reset Dictionary
      */
     public void resetDictionary() {
-        dictionary = new HashMap<String, ArrayList<String>>();
-        readDataFromFile(pathToDictionary);
+        readDataFromFile(true);
+        storeCurrentData();
     }
 
     public String[][] convertToDataOfTable() {
         String[] keys = dictionary.keySet().toArray(new String[0]);
-//        String[] key2s = dupplicateWord.keySet().toArray(new String[0]);
         return getMeaningByWords(keys);
     }
 
@@ -242,6 +274,7 @@ public class MyDictionary {
                 resultKeys.add(key);
             }
         }
+        addHistory("WORD", word);
         return getMeaningByWords(resultKeys.toArray(new String[0]));
     }
 
@@ -266,16 +299,104 @@ public class MyDictionary {
                 }
             }
         }
-
+        addHistory("DEFINITION",definition);
         return getMeaningByWords(resultKeys.toArray(new String[0]));
     }
 
+    /**
+     * Store data to file
+     */
+    public void storeCurrentData(){
+        try {
+            FileWriter file = new FileWriter(pathToData);
+            BufferedWriter bufferedWriter = new BufferedWriter(file);
+            String[] keys = dictionary.keySet().toArray(new String[0]);
+            for (String key : keys){
+                String string="";
+                ArrayList<String> meaning = dictionary.get(key);
+                int size = meaning.size();
+                if (meaning.size() > 1) {
+                    for (int i = 0; i <size - 1;++i){
+                        string+= meaning.get(i) +"|";
+                    }
+                    string += meaning.get(size-1);
+                }else{
+                    string += meaning.get(0);
+                }
+                bufferedWriter.write(key+"`"+string+"\n");
+            }
+            bufferedWriter.close();
+
+        }catch(Exception e){
+
+        }
+    }
+
+    /**
+     * Add history to file and list
+     * @param type Type of search (word or definition)
+     * @param textSearch text in Search input
+     */
+    public void addHistory(String type, String textSearch){
+        String string =  "Search by: " + type + " Text: " + textSearch;
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        String date = dtf.format(now);
+        String historyString = "["+date+"] - "+string;
+        history.add(historyString);
+        try {
+            File file = new File(pathToHistory);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true));
+            bufferedWriter.write(historyString+"\n");
+            bufferedWriter.close();
+        }catch (Exception e){
+            System.out.println("History bug: " + e.getMessage());
+        }
+    }
+
+    public void loadHistoryFromFile(){
+        try{
+            File file = new File(pathToHistory);
+            if (!file.exists()) {
+                file.createNewFile();
+                return;
+            }
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+            while(true){
+                line = bufferedReader.readLine();
+                if (line == null){
+                    break;
+                }
+                history.add(line);
+            }
+//            System.out.println(history);
+            bufferedReader.close();
+        }catch (Exception e){
+            System.out.println("History loading bug");
+        }
+    }
+
+    /**
+     * Get history
+     * @return List String
+     */
+    public String[] getHistorySearch(){
+        int size = history.size();
+        String[] list = new String[size];
+        int index = 0;
+        for (int i = size - 1 ; i >=0 ; i--){
+            list[index++] = history.get(i);
+        }
+//        System.out.println(Arrays.toString(list));
+        return list;
+    }
 
 
     public static void main(String[] args) {
-        MyDictionary myDictionary = new MyDictionary();
-        myDictionary.deleteWord("CBBC","Children's BBC");
-        System.out.println(myDictionary.findMeaning("CBBC"));
-
     }
 }
