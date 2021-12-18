@@ -19,6 +19,7 @@ public class MainFrame extends JFrame {
 
     private JTabbedPane tabbedPane;
     private DictionaryTab dictionaryTab;
+    private QuizTab quizTab;
 
 
 
@@ -47,10 +48,13 @@ public class MainFrame extends JFrame {
         container.setLayout(null);
 
     }
-    public void setDisplay(){
+    public void setDisplay(boolean b){
         pack();
         setLocationRelativeTo(null);
-        setVisible(true);
+        setVisible(b);
+        String[][] randomWord = dictionary.getRandomWord();
+        String message = String.format("Word: %s \nDefinition: %s ", randomWord[0][0], randomWord[0][1]);
+        JOptionPane.showMessageDialog(this, message, "Information", JOptionPane.INFORMATION_MESSAGE);
     }
 
 
@@ -59,6 +63,10 @@ public class MainFrame extends JFrame {
 
         dictionaryTab = new DictionaryTab(this);
         tabbedPane.addTab("Dictionary",null, dictionaryTab, "Slang Dictionary: You can do anything!");
+
+        quizTab = new QuizTab(this);
+        tabbedPane.addTab("Quiz", null, quizTab,"Quiz with Slang word");
+
 
 //        configTab = new ConfigUI();
 //        tabbedPane.addTab("Config Server",null, configTab,"Config SQL server");
@@ -79,7 +87,7 @@ public class MainFrame extends JFrame {
 
     public static void main(String[] args){
         MainFrame mainFrame = new MainFrame();
-        mainFrame.setDisplay();
+        mainFrame.setDisplay(true);
     }
 
 

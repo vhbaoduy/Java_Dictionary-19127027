@@ -12,6 +12,7 @@ import java.util.*;
  * Description: ...
  */
 public class MyDictionary {
+    final private int LENGTH_HISTORY = 100;
     private HashMap<String, ArrayList<String>> dictionary;
     private String dir = "data";
     private String pathToDataRestore = dir + "/" + "restore/slang.txt";
@@ -349,7 +350,7 @@ public class MyDictionary {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, true));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file,true));
             bufferedWriter.write(historyString+"\n");
             bufferedWriter.close();
         }catch (Exception e){
@@ -367,6 +368,7 @@ public class MyDictionary {
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String line;
+            int i = 0;
             while(true){
                 line = bufferedReader.readLine();
                 if (line == null){
@@ -394,6 +396,35 @@ public class MyDictionary {
         }
 //        System.out.println(Arrays.toString(list));
         return list;
+    }
+
+    /**
+     * Get random slang word
+     * @return String[][]
+     */
+    public String[][] getRandomWord(){
+        String[] keys = dictionary.keySet().toArray(new String[0]);
+        int index = (int)Math.floor(Math.random()*(keys.length+1));
+        String[][] random = new String[1][2];
+        String meaning = dictionary.get(keys[index]).get(0);
+        random[0][0] = keys[index];
+        random[0][1] = meaning;
+        return random;
+    }
+
+
+    public HashMap<String,String> getRandomQuestionForGuessingDefinition(){
+        String[][] word = getRandomWord();
+        String[] keys = dictionary.keySet().toArray(new String[0]);
+        HashMap<String,String> indexes = new HashMap<>();
+        while (indexes.size() < 3){
+            int index = (int)Math.floor(Math.random()*(keys.length+1));
+            if (!keys[index].equals(word[0][0])){
+                indexes.put(String.valueOf(index),dictionary.get(keys[index]).get(0));
+            }
+        }
+        indexes.put(word[0][0],word[0][1]);
+        return indexes;
     }
 
 

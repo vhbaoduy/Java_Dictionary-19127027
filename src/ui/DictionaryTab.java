@@ -43,6 +43,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
     private JButton editButton;
     private JButton deleteButton;
     private JButton resetButton;
+    private JButton randomButton;
 
     // Display
     private JLabel selectedRow;
@@ -196,6 +197,9 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         editButton = new JButton("Edit word");
         editButton.addActionListener(this);
 
+        randomButton = new JButton("Random word");
+        randomButton.addActionListener(this);
+
 //        bottomPane.add(selectedRow);
 
         bottomPane.add(refreshButton);
@@ -203,6 +207,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         bottomPane.add(addButton);
         bottomPane.add(editButton);
         bottomPane.add(deleteButton);
+        bottomPane.add(randomButton);
 
         return bottomPane;
 
@@ -243,7 +248,7 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MyDictionary dictionary = mainFrame.dictionary;
+        MyDictionary dictionary = MainFrame.dictionary;
         if (e.getSource() == addButton) {
             SlangForm slangForm = new SlangForm(this, dictionary, "add", null);
         }
@@ -313,6 +318,11 @@ public class DictionaryTab extends JPanel implements ActionListener, MouseListen
         }
         if (e.getSource() == historyButton){
             new History(dictionary.getHistorySearch());
+        }
+        if (e.getSource() == randomButton){
+            String[][] randomWord = dictionary.getRandomWord();
+            String message = String.format("Word: %s \nDefinition: %s ", randomWord[0][0], randomWord[0][1]);
+            JOptionPane.showMessageDialog(this, message, "Information", JOptionPane.INFORMATION_MESSAGE);
         }
 
 
