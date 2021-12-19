@@ -37,13 +37,18 @@ public class MyDictionary {
     public boolean readDataFromFile(boolean isReset) {
         try {
             dictionary = new HashMap<String, ArrayList<String>>();
-            FileReader fileReader= null;
+            File file= null;
             if (!isReset) {
-                fileReader = new FileReader(pathToData);
+                file = new File(pathToData);
+                if (!file.exists()){
+                    readDataFromFile(true);
+                    storeCurrentData();
+                    return true;
+                }
             }else{
-                fileReader = new FileReader(pathToDataRestore);
+                file = new File(pathToDataRestore);
             }
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             String line;
 //            line = bufferedReader.readLine(); // ignore first line
             int i = 0;
@@ -426,6 +431,23 @@ public class MyDictionary {
         indexes.put(word[0][0],word[0][1]);
         return indexes;
     }
+
+
+    public HashMap<String,String> getRandomQuestionForGuessingWord(){
+        String[][] word = getRandomWord();
+        String[] keys = dictionary.keySet().toArray(new String[0]);
+        HashMap<String,String> indexes = new HashMap<>();
+        while (indexes.size() < 3){
+            int index = (int)Math.floor(Math.random()*(keys.length+1));
+            if (!keys[index].equals(word[0][0])){
+                indexes.put(String.valueOf(index),keys[index]);
+            }
+        }
+        indexes.put(word[0][1],word[0][0]);
+        return indexes;
+    }
+
+
 
 
     public static void main(String[] args) {
