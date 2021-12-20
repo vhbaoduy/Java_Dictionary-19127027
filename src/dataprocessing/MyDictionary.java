@@ -418,6 +418,10 @@ public class MyDictionary {
     }
 
 
+    /**
+     * Quiz with guess definition
+     * @return Hashmap of data
+     */
     public HashMap<String,String> getRandomQuestionForGuessingDefinition(){
         String[][] word = getRandomWord();
         String[] keys = dictionary.keySet().toArray(new String[0]);
@@ -432,7 +436,10 @@ public class MyDictionary {
         return indexes;
     }
 
-
+    /**
+     * Quiz with guess word
+     * @return Hashmap of data
+     */
     public HashMap<String,String> getRandomQuestionForGuessingWord(){
         String[][] word = getRandomWord();
         String[] keys = dictionary.keySet().toArray(new String[0]);
@@ -447,9 +454,4 @@ public class MyDictionary {
         return indexes;
     }
 
-
-
-
-    public static void main(String[] args) {
-    }
 }
