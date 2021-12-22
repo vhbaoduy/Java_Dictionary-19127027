@@ -233,24 +233,37 @@ public class MyDictionary {
         return getMeaningByWords(keys);
     }
 
-    public String[][] getMeaningByWords(String[] keys){
+    public String[][] getMeaningByWords(String[] keys, String ... searchMeaning){
 
         ArrayList<String[]> data = new ArrayList<>();
+        String search = null;
+        if (searchMeaning.length > 0){
+            search = searchMeaning[0];
+        }
         int i = 0;
         for (String key : keys) {
             ArrayList<String> meaning = dictionary.get(key);
-//            data[i][0] = String.valueOf(i);
-//            data[i][1] = key;
-//            data[i][2] = String.valueOf(dictionary.get(key)).replace("[","").replace("]","");;
 
             if (meaning != null) {
                 for (String value : meaning) {
                     String[] row = new String[3];
-                    row[0] = String.valueOf(i);
-                    row[1] = key;
-                    row[2] = value;
-                    i++;
-                    data.add(row);
+                    if (search != null){
+                        if (value.toLowerCase(Locale.ROOT).contains(search)){
+                            row[0] = String.valueOf(i);
+                            row[1] = key;
+                            row[2] = value;
+                            i++;
+                            data.add(row);
+                            break;
+                        }
+                    }else {
+                        row[0] = String.valueOf(i);
+                        row[1] = key;
+                        row[2] = value;
+                        i++;
+                        data.add(row);
+                    }
+
                 }
 
             }else{
@@ -306,7 +319,7 @@ public class MyDictionary {
             }
         }
         addHistory("DEFINITION",definition);
-        return getMeaningByWords(resultKeys.toArray(new String[0]));
+        return getMeaningByWords(resultKeys.toArray(new String[0]),definitionLowercase);
     }
 
     /**
